@@ -8,7 +8,11 @@ import {
   Post,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { postPayload } from './interface/post.interface';
+import {
+  createPostDto,
+  createPostSchema,
+} from 'src/common/interface/post.schema';
+import { PostPipe } from './post.pipe';
 
 @Controller('post')
 export class PostController {
@@ -16,7 +20,7 @@ export class PostController {
 
   @Post()
   @HttpCode(201)
-  async create(@Body() payload: postPayload) {
+  async create(@Body(new PostPipe(createPostSchema)) payload: createPostDto) {
     const createdPost = await this.postService.createPost(payload);
     return {
       success: true,
@@ -42,7 +46,7 @@ export class PostController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() payload: postPayload) {
+  async update(@Param('id') id: number, @Body() payload: createPostDto) {
     const updateData = await this.postService.updatePost({
       data: payload,
       where: {
