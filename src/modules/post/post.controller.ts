@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -11,8 +13,10 @@ import { PostService } from './post.service';
 import {
   createPostDto,
   createPostSchema,
+  updatePostDto,
+  updatePostScheam,
 } from 'src/common/interface/post.schema';
-import { PostPipe } from './post.pipe';
+import { PostPipe } from './pipe/post.pipe';
 
 @Controller('post')
 export class PostController {
@@ -32,7 +36,18 @@ export class PostController {
   @Get()
   @HttpCode(200)
   async findAll() {
-    return this.postService.post();
+    const posts = await this.postService.post();
+    if (!posts) {
+      return {
+        success: true,
+        data: [],
+      };
+    }
+    return {
+      success: true,
+      message: 'Fetching successfully',
+      data: posts,
+    };
   }
 
   @Get(':id')
@@ -46,7 +61,10 @@ export class PostController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() payload: createPostDto) {
+  async update(
+    @Param('id') id: number,
+    @Body(new PostPipe(updatePostScheam)) payload: updatePostDto,
+  ) {
     const updateData = await this.postService.updatePost({
       data: payload,
       where: {
@@ -59,5 +77,23 @@ export class PostController {
       message: 'Update Successfully',
       data: updateData,
     };
+  }
+
+  @Delete()
+  async delete(@Body() { id }: { id: number }) {
+    try {
+      await this.postService.deletePost(id);
+      return {
+        success: true,
+        message: 'Delete Successfully',
+      };
+    } catch (err) {
+      console.log(err);
+
+      throw new BadRequestException({
+        success: false,
+        message: err.meta.cause,
+      });
+    }
   }
 }

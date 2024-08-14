@@ -13,6 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  email String?
+  password String 
+  posts Post[]
+}
 
 model Post {
   id Int @id @default(autoincrement())
@@ -20,4 +27,6 @@ model Post {
   description String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  user_id Int
+  user User @relation(fields: [user_id] , references: [id] , onDelete: Cascade , onUpdate: Cascade) 
 }
