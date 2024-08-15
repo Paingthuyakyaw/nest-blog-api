@@ -20,12 +20,13 @@ export class PostService {
   }
 
   async createPost(payload: createPostDto): Promise<Post> {
-    return this.prisma.post.create({
-      data: {
-        title: payload.title,
-        description: payload.description,
-      },
-    });
+    return;
+    // return this.prisma.post.create({
+    //   data: {
+    //     title: payload.title,
+    //     description: payload.description,
+    //   },
+    // });
   }
 
   async updatePost(params: {

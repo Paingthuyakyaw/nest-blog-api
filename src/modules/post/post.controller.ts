@@ -16,7 +16,7 @@ import {
   updatePostDto,
   updatePostScheam,
 } from 'src/common/interface/post.schema';
-import { PostPipe } from './pipe/post.pipe';
+import { ZodValidationPipe } from '../../common/pipe/zod.pipe';
 
 @Controller('post')
 export class PostController {
@@ -24,7 +24,9 @@ export class PostController {
 
   @Post()
   @HttpCode(201)
-  async create(@Body(new PostPipe(createPostSchema)) payload: createPostDto) {
+  async create(
+    @Body(new ZodValidationPipe(createPostSchema)) payload: createPostDto,
+  ) {
     const createdPost = await this.postService.createPost(payload);
     return {
       success: true,
@@ -63,7 +65,7 @@ export class PostController {
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body(new PostPipe(updatePostScheam)) payload: updatePostDto,
+    @Body(new ZodValidationPipe(updatePostScheam)) payload: updatePostDto,
   ) {
     const updateData = await this.postService.updatePost({
       data: payload,

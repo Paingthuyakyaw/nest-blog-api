@@ -19,6 +19,8 @@ model User {
   email String?
   password String 
   posts Post[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Post {

@@ -1,8 +1,8 @@
 import { createPostSchema } from 'src/common/interface/post.schema';
-import { PostPipe } from './post.pipe';
+import { ZodValidationPipe } from './zod.pipe';
 
 describe('PostPipe', () => {
   it('should be defined', () => {
-    expect(new PostPipe(createPostSchema)).toBeDefined();
+    expect(new ZodValidationPipe(createPostSchema)).toBeDefined();
   });
 });
