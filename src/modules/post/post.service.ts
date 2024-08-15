@@ -7,8 +7,11 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 export class PostService {
   constructor(private prisma: PrismaService) {}
 
-  async post(): Promise<Post[]> {
-    return this.prisma.post.findMany();
+  async post({ page, size }: { page: number; size: number }): Promise<Post[]> {
+    return this.prisma.post.findMany({
+      skip: 0 < page ? size * (page - 1) : 0,
+      take: size,
+    });
   }
 
   async postById(id: number): Promise<Post> {
@@ -16,26 +19,56 @@ export class PostService {
       where: {
         id: Number(id),
       },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        created_at: true,
+        updated_at: true,
+        user_id: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
   }
 
-  async createPost(payload: createPostDto): Promise<Post> {
-    return;
-    // return this.prisma.post.create({
-    //   data: {
-    //     title: payload.title,
-    //     description: payload.description,
-    //   },
-    // });
+  async createPost(payload: createPostDto, userId: number): Promise<Post> {
+    return this.prisma.post.create({
+      data: {
+        title: payload.title,
+        description: payload.description,
+        user: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
   }
 
   async updatePost(params: {
     data: Prisma.PostUpdateInput;
     where: Prisma.PostWhereUniqueInput;
+    userId: number;
   }): Promise<Post> {
-    const { data, where } = params;
+    const { data, where, userId } = params;
     return this.prisma.post.update({
-      data,
+      data: {
+        title: data.title,
+        description: data.description,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        user: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
       where,
     });
   }
