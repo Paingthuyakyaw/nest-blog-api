@@ -26,6 +26,7 @@ export class PostService {
         created_at: true,
         updated_at: true,
         user_id: true,
+        image: true,
         user: {
           select: {
             id: true,
@@ -37,11 +38,16 @@ export class PostService {
     });
   }
 
-  async createPost(payload: createPostDto, userId: number): Promise<Post> {
+  async createPost(
+    payload: createPostDto,
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<Post> {
     return this.prisma.post.create({
       data: {
         title: payload.title,
         description: payload.description,
+        image: file.path,
         user: {
           connect: {
             id: Number(userId),

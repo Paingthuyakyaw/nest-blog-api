@@ -54,9 +54,11 @@ export class PostController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const userId = req.user.data.id;
-    const createdPost = await this.postService.createPost(payload, userId);
-    console.log(file);
-
+    const createdPost = await this.postService.createPost(
+      payload,
+      userId,
+      file,
+    );
     return {
       success: true,
       message: 'Post created successfully',
@@ -75,6 +77,7 @@ export class PostController {
         data: [],
       };
     }
+
     return {
       success: true,
       message: 'Fetching successfully',
