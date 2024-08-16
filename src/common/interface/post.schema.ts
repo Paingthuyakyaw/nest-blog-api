@@ -5,6 +5,7 @@ export const createPostSchema = z
   .object({
     title: z.string(),
     description: z.string(),
+    image: z.any(),
   })
   .required();
 

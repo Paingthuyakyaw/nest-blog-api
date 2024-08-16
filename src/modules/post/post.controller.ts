@@ -26,6 +26,7 @@ import { UserGuard } from '../auth/guard/user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { unlinkSync } from 'fs';
 
 @Controller('post')
 export class PostController {
@@ -102,18 +103,41 @@ export class PostController {
 
   @UseGuards(UserGuard)
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
   async update(
     @Param('id') id: number,
     @Body(new ZodValidationPipe(updatePostScheam)) payload: updatePostDto,
     @Request() req,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const userId = req.user.data.id;
+
+    const exitPost = await this.postService.postById(id);
+
+    if (exitPost) {
+      unlinkSync(`./uploads/${exitPost.image}`);
+    }
+
     const updateData = await this.postService.updatePost({
       data: payload,
       where: {
         id: Number(id),
       },
       userId,
+      file,
     });
 
     return {

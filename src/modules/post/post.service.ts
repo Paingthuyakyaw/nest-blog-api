@@ -61,14 +61,16 @@ export class PostService {
     data: Prisma.PostUpdateInput;
     where: Prisma.PostWhereUniqueInput;
     userId: number;
+    file: Express.Multer.File;
   }): Promise<Post> {
-    const { data, where, userId } = params;
+    const { data, where, userId, file } = params;
     return this.prisma.post.update({
       data: {
         title: data.title,
         description: data.description,
         created_at: data.created_at,
         updated_at: data.updated_at,
+        image: file.path,
         user: {
           connect: {
             id: Number(userId),
