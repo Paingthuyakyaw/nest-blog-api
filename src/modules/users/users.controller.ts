@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -34,33 +35,39 @@ export class UsersController {
 
   @Post('/login')
   async login(@Body(new ZodValidationPipe(userLoginSchema)) req: userLoginDto) {
-    const user = await this.authService.loginUser(req);
-    // console.log(user);
-    if (user) {
-      const comparePassword = await compare(req.password, user.password);
-      if (!comparePassword) {
-        throw new UnauthorizedException('Wrong Credential');
+    try {
+      const user = await this.authService.loginUser(req);
+      if (user) {
+        const comparePassword = await compare(req.password, user.password);
+        if (!comparePassword) {
+          throw new UnauthorizedException('Wrong Credential');
+        }
+        return this.authService.getUserToken(user);
       }
-      return this.authService.getUserToken(user);
+      return user;
+    } catch (error) {
+      throw new BadRequestException();
     }
-    return user;
-    // return this.authService.getUserToken();
   }
 
   @Post()
   async create(
     @Body(new ZodValidationPipe(createUserSchema)) payload: createUserDto,
   ) {
-    const user = await this.userService.createUser({
-      name: payload.name,
-      email: payload.email,
-      password: (await hash(payload.password, 10)).toString(),
-    });
-    return {
-      success: true,
-      message: 'User Create',
-      data: user,
-    };
+    try {
+      const user = await this.userService.createUser({
+        name: payload.name,
+        email: payload.email,
+        password: (await hash(payload.password, 10)).toString(),
+      });
+      return {
+        success: true,
+        message: 'User Create',
+        data: user,
+      };
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 
   @Get()

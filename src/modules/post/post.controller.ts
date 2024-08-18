@@ -52,7 +52,7 @@ export class PostController {
   async create(
     @Body(new ZodValidationPipe(createPostSchema)) payload: createPostDto,
     @Request() req,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     const userId = req.user.data.id;
     const createdPost = await this.postService.createPost(

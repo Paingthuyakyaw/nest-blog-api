@@ -10,9 +10,10 @@ import { UsersController } from './modules/users/users.controller';
 import { PostModule } from './modules/post/post.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
-  imports: [AuthModule, PostModule, UsersModule, PrismaModule],
+  imports: [AuthModule, PostModule, UsersModule, PrismaModule, TagsModule],
   controllers: [AppController, PostController, UsersController],
   providers: [AppService, PrismaService, PostService, UsersService],
 })

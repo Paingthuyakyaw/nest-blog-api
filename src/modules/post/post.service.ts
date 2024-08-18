@@ -43,16 +43,18 @@ export class PostService {
     userId: number,
     file: Express.Multer.File,
   ): Promise<Post> {
+    const { tagId } = payload;
     return this.prisma.post.create({
       data: {
         title: payload.title,
         description: payload.description,
-        image: file.path,
+        image: file?.path || '',
         user: {
           connect: {
             id: Number(userId),
           },
         },
+        tags: { connect: tagId.map((val) => ({ id: val })) },
       },
     });
   }
