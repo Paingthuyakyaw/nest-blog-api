@@ -101,6 +101,16 @@ export class PostController {
     };
   }
 
+  @Get('latest')
+  async findLatest() {
+    const latestPosts = await this.postService.latestPost();
+    return {
+      success: true,
+      message: 'Latest Post',
+      data: latestPosts,
+    };
+  }
+
   @UseGuards(UserGuard)
   @Patch(':id')
   @UseInterceptors(

@@ -38,6 +38,15 @@ export class PostService {
     });
   }
 
+  async latestPost() {
+    this.prisma.post.findMany({
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: 4,
+    });
+  }
+
   async createPost(
     payload: createPostDto,
     userId: number,
